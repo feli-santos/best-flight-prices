@@ -1,0 +1,63 @@
+# CC|continent|rank(0=extra)|en|pt|es   -- curated popular leisure destinations; informed by UN Tourism arrivals rankings, NOT an exact ranking
+FR|Europe|1|France|França|Francia
+ES|Europe|2|Spain|Espanha|España
+US|North America|3|United States|Estados Unidos|Estados Unidos
+IT|Europe|4|Italy|Itália|Italia
+TR|Asia|5|Türkiye|Turquia|Turquía
+MX|North America|6|Mexico|México|México
+GB|Europe|7|United Kingdom|Reino Unido|Reino Unido
+JP|Asia|8|Japan|Japão|Japón
+DE|Europe|9|Germany|Alemanha|Alemania
+GR|Europe|10|Greece|Grécia|Grecia
+AT|Europe|11|Austria|Áustria|Austria
+TH|Asia|12|Thailand|Tailândia|Tailandia
+AE|Asia|13|United Arab Emirates|Emirados Árabes Unidos|Emiratos Árabes Unidos
+PT|Europe|14|Portugal|Portugal|Portugal
+NL|Europe|15|Netherlands|Países Baixos|Países Bajos
+HR|Europe|16|Croatia|Croácia|Croacia
+MY|Asia|17|Malaysia|Malásia|Malasia
+CA|North America|18|Canada|Canadá|Canadá
+MA|Africa|19|Morocco|Marrocos|Marruecos
+EG|Africa|20|Egypt|Egito|Egipto
+ID|Asia|21|Indonesia|Indonésia|Indonesia
+VN|Asia|22|Vietnam|Vietnã|Vietnam
+CZ|Europe|23|Czechia|Tchéquia|Chequia
+CH|Europe|24|Switzerland|Suíça|Suiza
+IE|Europe|25|Ireland|Irlanda|Irlanda
+KR|Asia|26|South Korea|Coreia do Sul|Corea del Sur
+IN|Asia|27|India|Índia|India
+DO|North America|28|Dominican Republic|República Dominicana|República Dominicana
+SG|Asia|29|Singapore|Singapura|Singapur
+AR|South America|30|Argentina|Argentina|Argentina
+BR|South America|31|Brazil|Brasil|Brasil
+CL|South America|32|Chile|Chile|Chile
+PE|South America|33|Peru|Peru|Perú
+CO|South America|34|Colombia|Colômbia|Colombia
+ZA|Africa|35|South Africa|África do Sul|Sudáfrica
+AU|Oceania|36|Australia|Austrália|Australia
+NZ|Oceania|37|New Zealand|Nova Zelândia|Nueva Zelanda
+CR|North America|38|Costa Rica|Costa Rica|Costa Rica
+CN|Asia|39|China|China|China
+HU|Europe|40|Hungary|Hungria|Hungría
+PL|Europe|41|Poland|Polônia|Polonia
+IS|Europe|42|Iceland|Islândia|Islandia
+PH|Asia|43|Philippines|Filipinas|Filipinas
+HK|Asia|44|Hong Kong|Hong Kong|Hong Kong
+TW|Asia|45|Taiwan|Taiwan|Taiwán
+BE|Europe|46|Belgium|Bélgica|Bélgica
+UY|South America|47|Uruguay|Uruguai|Uruguay
+EC|South America|48|Ecuador|Equador|Ecuador
+KE|Africa|49|Kenya|Quênia|Kenia
+TZ|Africa|50|Tanzania|Tanzânia|Tanzania
+BO|South America|0|Bolivia|Bolívia|Bolivia
+CU|North America|0|Cuba|Cuba|Cuba
+NO|Europe|0|Norway|Noruega|Noruega
+SE|Europe|0|Sweden|Suécia|Suecia
+DK|Europe|0|Denmark|Dinamarca|Dinamarca
+FI|Europe|0|Finland|Finlândia|Finlandia
+MV|Asia|0|Maldives|Maldivas|Maldivas
+NP|Asia|0|Nepal|Nepal|Nepal
+JO|Asia|0|Jordan|Jordânia|Jordania
+PA|North America|0|Panama|Panamá|Panamá
+FJ|Oceania|0|Fiji|Fiji|Fiyi
+PF|Oceania|0|French Polynesia|Polinésia Francesa|Polinesia Francesa

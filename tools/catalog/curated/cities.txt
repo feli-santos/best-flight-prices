@@ -1,0 +1,126 @@
+# id|CC|gateway(IATA city/airport code)|coordAirport|minNights|en|pt|es
+fr-paris|FR|PAR|CDG||Paris|Paris|París
+fr-nice|FR|NCE|NCE||Nice|Nice|Niza
+fr-lyon|FR|LYS|LYS||Lyon|Lyon|Lyon
+es-madrid|ES|MAD|MAD||Madrid|Madri|Madrid
+es-barcelona|ES|BCN|BCN||Barcelona|Barcelona|Barcelona
+es-seville|ES|SVQ|SVQ||Seville|Sevilha|Sevilla
+us-new-york|US|NYC|JFK||New York|Nova York|Nueva York
+us-miami|US|MIA|MIA||Miami|Miami|Miami
+us-los-angeles|US|LAX|LAX||Los Angeles|Los Angeles|Los Ángeles
+it-rome|IT|ROM|FCO||Rome|Roma|Roma
+it-milan|IT|MIL|MXP||Milan|Milão|Milán
+it-venice|IT|VCE|VCE||Venice|Veneza|Venecia
+tr-istanbul|TR|IST|IST||Istanbul|Istambul|Estambul
+tr-antalya|TR|AYT|AYT||Antalya|Antália|Antalya
+tr-cappadocia|TR|ASR|ASR||Cappadocia|Capadócia|Capadocia
+mx-mexico-city|MX|MEX|MEX||Mexico City|Cidade do México|Ciudad de México
+mx-cancun|MX|CUN|CUN||Cancún|Cancún|Cancún
+mx-puerto-vallarta|MX|PVR|PVR||Puerto Vallarta|Puerto Vallarta|Puerto Vallarta
+gb-london|GB|LON|LHR||London|Londres|Londres
+gb-edinburgh|GB|EDI|EDI||Edinburgh|Edimburgo|Edimburgo
+gb-manchester|GB|MAN|MAN||Manchester|Manchester|Mánchester
+jp-tokyo|JP|TYO|HND|10|Tokyo|Tóquio|Tokio
+jp-osaka|JP|OSA|KIX|8|Osaka|Osaka|Osaka
+jp-sapporo|JP|SPK|CTS|7|Sapporo|Sapporo|Sapporo
+de-berlin|DE|BER|BER||Berlin|Berlim|Berlín
+de-munich|DE|MUC|MUC||Munich|Munique|Múnich
+de-frankfurt|DE|FRA|FRA||Frankfurt|Frankfurt|Fráncfort
+gr-athens|GR|ATH|ATH||Athens|Atenas|Atenas
+gr-santorini|GR|JTR|JTR||Santorini|Santorini|Santorini
+gr-heraklion|GR|HER|HER||Crete (Heraklion)|Creta (Heraklion)|Creta (Heraclión)
+at-vienna|AT|VIE|VIE||Vienna|Viena|Viena
+at-salzburg|AT|SZG|SZG||Salzburg|Salzburgo|Salzburgo
+th-bangkok|TH|BKK|BKK||Bangkok|Bangkok|Bangkok
+th-phuket|TH|HKT|HKT||Phuket|Phuket|Phuket
+th-chiang-mai|TH|CNX|CNX||Chiang Mai|Chiang Mai|Chiang Mai
+ae-dubai|AE|DXB|DXB||Dubai|Dubai|Dubái
+ae-abu-dhabi|AE|AUH|AUH||Abu Dhabi|Abu Dhabi|Abu Dabi
+pt-lisbon|PT|LIS|LIS||Lisbon|Lisboa|Lisboa
+pt-porto|PT|OPO|OPO||Porto|Porto|Oporto
+pt-faro|PT|FAO|FAO||Faro (Algarve)|Faro (Algarve)|Faro (Algarve)
+nl-amsterdam|NL|AMS|AMS||Amsterdam|Amsterdã|Ámsterdam
+hr-zagreb|HR|ZAG|ZAG||Zagreb|Zagreb|Zagreb
+hr-split|HR|SPU|SPU||Split|Split|Split
+hr-dubrovnik|HR|DBV|DBV||Dubrovnik|Dubrovnik|Dubrovnik
+my-kuala-lumpur|MY|KUL|KUL||Kuala Lumpur|Kuala Lumpur|Kuala Lumpur
+my-penang|MY|PEN|PEN||Penang|Penang|Penang
+ca-toronto|CA|YTO|YYZ||Toronto|Toronto|Toronto
+ca-vancouver|CA|YVR|YVR||Vancouver|Vancouver|Vancouver
+ca-montreal|CA|YMQ|YUL||Montreal|Montreal|Montreal
+ma-marrakech|MA|RAK|RAK||Marrakech|Marrakech|Marrakech
+ma-casablanca|MA|CMN|CMN||Casablanca|Casablanca|Casablanca
+eg-cairo|EG|CAI|CAI||Cairo|Cairo|El Cairo
+eg-sharm-el-sheikh|EG|SSH|SSH||Sharm el-Sheikh|Sharm el-Sheikh|Sharm el-Sheikh
+id-bali|ID|DPS|DPS||Bali|Bali|Bali
+id-jakarta|ID|JKT|CGK||Jakarta|Jacarta|Yakarta
+vn-hanoi|VN|HAN|HAN||Hanoi|Hanói|Hanói
+vn-ho-chi-minh-city|VN|SGN|SGN||Ho Chi Minh City|Cidade de Ho Chi Minh|Ciudad Ho Chi Minh
+vn-da-nang|VN|DAD|DAD||Da Nang|Da Nang|Da Nang
+cz-prague|CZ|PRG|PRG||Prague|Praga|Praga
+ch-zurich|CH|ZRH|ZRH||Zurich|Zurique|Zúrich
+ch-geneva|CH|GVA|GVA||Geneva|Genebra|Ginebra
+ie-dublin|IE|DUB|DUB||Dublin|Dublin|Dublín
+kr-seoul|KR|SEL|ICN||Seoul|Seul|Seúl
+kr-busan|KR|PUS|PUS||Busan|Busan|Busan
+kr-jeju|KR|CJU|CJU||Jeju|Jeju|Jeju
+in-delhi|IN|DEL|DEL||Delhi|Délhi|Delhi
+in-mumbai|IN|BOM|BOM||Mumbai|Mumbai|Bombay
+in-goa|IN|GOI|GOI||Goa|Goa|Goa
+do-punta-cana|DO|PUJ|PUJ||Punta Cana|Punta Cana|Punta Cana
+do-santo-domingo|DO|SDQ|SDQ||Santo Domingo|Santo Domingo|Santo Domingo
+sg-singapore|SG|SIN|SIN||Singapore|Singapura|Singapur
+ar-buenos-aires|AR|BUE|EZE||Buenos Aires|Buenos Aires|Buenos Aires
+ar-bariloche|AR|BRC|BRC||Bariloche|Bariloche|Bariloche
+ar-mendoza|AR|MDZ|MDZ||Mendoza|Mendoza|Mendoza
+br-sao-paulo|BR|SAO|GRU||São Paulo|São Paulo|São Paulo
+br-rio-de-janeiro|BR|RIO|GIG||Rio de Janeiro|Rio de Janeiro|Río de Janeiro
+br-salvador|BR|SSA|SSA||Salvador|Salvador|Salvador
+cl-santiago|CL|SCL|SCL||Santiago|Santiago|Santiago
+cl-punta-arenas|CL|PUQ|PUQ||Punta Arenas (Patagonia)|Punta Arenas (Patagônia)|Punta Arenas (Patagonia)
+pe-lima|PE|LIM|LIM||Lima|Lima|Lima
+pe-cusco|PE|CUZ|CUZ||Cusco|Cusco|Cusco
+co-bogota|CO|BOG|BOG||Bogotá|Bogotá|Bogotá
+co-cartagena|CO|CTG|CTG||Cartagena|Cartagena|Cartagena
+co-medellin|CO|MDE|MDE||Medellín|Medellín|Medellín
+za-cape-town|ZA|CPT|CPT||Cape Town|Cidade do Cabo|Ciudad del Cabo
+za-johannesburg|ZA|JNB|JNB||Johannesburg|Joanesburgo|Johannesburgo
+au-sydney|AU|SYD|SYD|12|Sydney|Sydney|Sídney
+au-melbourne|AU|MEL|MEL|10|Melbourne|Melbourne|Melbourne
+au-cairns|AU|CNS|CNS|10|Cairns|Cairns|Cairns
+nz-auckland|NZ|AKL|AKL|10|Auckland|Auckland|Auckland
+nz-queenstown|NZ|ZQN|ZQN|10|Queenstown|Queenstown|Queenstown
+cr-san-jose|CR|SJO|SJO||San José|San José|San José
+cr-liberia|CR|LIR|LIR||Liberia (Guanacaste)|Liberia (Guanacaste)|Liberia (Guanacaste)
+cn-beijing|CN|BJS|PEK||Beijing|Pequim|Pekín
+cn-shanghai|CN|SHA|PVG||Shanghai|Xangai|Shanghái
+hu-budapest|HU|BUD|BUD||Budapest|Budapeste|Budapest
+pl-warsaw|PL|WAW|WAW||Warsaw|Varsóvia|Varsovia
+pl-krakow|PL|KRK|KRK||Kraków|Cracóvia|Cracovia
+is-reykjavik|IS|REK|KEF||Reykjavik|Reykjavik|Reikiavik
+ph-manila|PH|MNL|MNL||Manila|Manila|Manila
+ph-cebu|PH|CEB|CEB||Cebu|Cebu|Cebú
+hk-hong-kong|HK|HKG|HKG||Hong Kong|Hong Kong|Hong Kong
+tw-taipei|TW|TPE|TPE||Taipei|Taipé|Taipéi
+be-brussels|BE|BRU|BRU||Brussels|Bruxelas|Bruselas
+uy-montevideo|UY|MVD|MVD||Montevideo|Montevidéu|Montevideo
+uy-punta-del-este|UY|PDP|PDP||Punta del Este|Punta del Este|Punta del Este
+ec-quito|EC|UIO|UIO||Quito|Quito|Quito
+ec-galapagos|EC|GPS|GPS||Galápagos|Galápagos|Galápagos
+ke-nairobi|KE|NBO|NBO||Nairobi|Nairóbi|Nairobi
+tz-zanzibar|TZ|ZNZ|ZNZ||Zanzibar|Zanzibar|Zanzíbar
+tz-kilimanjaro|TZ|JRO|JRO||Kilimanjaro / Arusha|Kilimanjaro / Arusha|Kilimanjaro / Arusha
+bo-uyuni|BO|UYU|UYU||Uyuni|Uyuni|Uyuni
+bo-la-paz|BO|LPB|LPB||La Paz|La Paz|La Paz
+cu-havana|CU|HAV|HAV||Havana|Havana|La Habana
+no-tromso|NO|TOS|TOS||Tromsø|Tromsø|Tromsø
+no-oslo|NO|OSL|OSL||Oslo|Oslo|Oslo
+se-stockholm|SE|STO|ARN||Stockholm|Estocolmo|Estocolmo
+dk-copenhagen|DK|CPH|CPH||Copenhagen|Copenhague|Copenhague
+fi-rovaniemi|FI|RVN|RVN||Rovaniemi|Rovaniemi|Rovaniemi
+mv-male|MV|MLE|MLE||Maldives (Malé)|Maldivas (Malé)|Maldivas (Malé)
+np-kathmandu|NP|KTM|KTM||Kathmandu|Katmandu|Katmandú
+jo-amman|JO|AMM|AMM||Amman|Amã|Amán
+pa-panama-city|PA|PTY|PTY||Panama City|Cidade do Panamá|Ciudad de Panamá
+fj-nadi|FJ|NAN|NAN||Fiji (Nadi)|Fiji (Nadi)|Fiyi (Nadi)
+pf-tahiti|PF|PPT|PPT||Tahiti|Taiti|Tahití

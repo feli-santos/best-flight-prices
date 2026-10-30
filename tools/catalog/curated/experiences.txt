@@ -1,0 +1,31 @@
+# id|destinations (comma)|peak months|shoulder months|basis
+uyuni-mirror|bo-uyuni|1,2,3|12,4|Rainy season leaves a thin water layer on the salt flat (mirror effect)
+japan-sakura|jp-tokyo,jp-osaka|3,4||Cherry blossom season, late March to April
+japan-autumn|jp-tokyo,jp-osaka|11|10,12|Autumn foliage season
+hokkaido-snow|jp-sapporo|1,2|12,3|Snow season and Sapporo Snow Festival in February
+aurora-north|no-tromso,fi-rovaniemi,is-reykjavik|11,12,1,2|9,10,3|Northern lights season roughly September to March
+rio-carnival|br-rio-de-janeiro|2|3|Carnival falls in February or early March
+europe-christmas|at-vienna,at-salzburg,cz-prague,de-munich,de-berlin,de-frankfurt,hu-budapest,pl-krakow,ch-zurich,be-brussels|12|11|Christmas markets, late November to December
+oktoberfest|de-munich|9|10|Oktoberfest, mid September to early October
+venice-carnival|it-venice|2||Carnival of Venice, February
+edinburgh-festival|gb-edinburgh|8||Edinburgh festivals in August
+tulips|nl-amsterdam|4|3,5|Tulip season, late March to mid May
+korea-blossom|kr-seoul,kr-jeju,kr-busan|4|3,10|Spring blossoms; autumn foliage in October
+canada-foliage|ca-montreal,ca-toronto|10|9|Autumn foliage season
+greek-summer|gr-santorini,gr-heraklion,gr-athens|6,7,8,9|5,10|Beach and island season
+algarve-summer|pt-faro|7,8,9|6|Beach season
+bali-dry|id-bali|6,7,8,9|4,5,10|Dry season
+patagonia-summer|cl-punta-arenas|12,1,2|11,3|Trekking season in Torres del Paine
+patagonia-ski|ar-bariloche|7,8|6,9|Ski season
+cusco-dry|pe-cusco|6,7,8|5,9|Dry season for Machu Picchu and treks
+maldives-dry|mv-male|12,1,2,3|4,11|Dry season
+phuket-dry|th-phuket|12,1,2,3|11,4|Andaman dry season
+caribbean-dry|do-punta-cana,mx-cancun,cu-havana|1,2,3,4|12|Dry season
+masai-mara|ke-nairobi|7,8,9,10||Great Migration river crossings, roughly July to October
+tz-dry|tz-kilimanjaro,tz-zanzibar|6,7,8,9|1,2,10|Dry seasons for safari, treks and the coast
+cape-summer|za-cape-town|12,1,2|11,3|Summer season
+nz-ski|nz-queenstown|7,8|6,9|Ski season
+nz-summer|nz-queenstown,nz-auckland|1,2|12,3|Summer season
+nepal-trek|np-kathmandu|10,11|3,4|Best trekking weather: autumn, then spring
+fiji-dry|fj-nadi|6,7,8,9|5,10|Dry season
+tahiti-dry|pf-tahiti|6,7,8|5,9|Dry season

@@ -1,4 +1,4 @@
-.PHONY: docs-check secret-scan test
+.PHONY: docs-check secret-scan test catalog-build catalog-validate test-tools
 docs-check:
 	python3 tools/checks/check_docs.py
 secret-scan:
@@ -7,3 +7,10 @@ secret-scan:
 test:
 	./gradlew jvmTest
 export JAVA_HOME ?= /opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home
+catalog-build:
+	python3 tools/catalog/build_catalog.py
+catalog-validate:
+	python3 tools/catalog/validate_catalog.py
+test-tools:
+	python3 tools/checks/tests/test_check_docs.py
+	python3 tools/catalog/tests/test_catalog.py
