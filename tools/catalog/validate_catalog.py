@@ -9,6 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 CAT, SRV = ROOT / "data" / "catalog", ROOT / "data" / "server"
 APP_BUDGET, SERVER_BUDGET = 1_500_000, 5_000_000
+TZ_COVERAGE_MIN = 0.90
 
 
 def load(p: Path):
@@ -62,6 +63,9 @@ def validate(cat: Path = CAT, srv: Path = SRV) -> list[str]:
         errs.append(f"app catalog {app_size} bytes exceeds budget {APP_BUDGET}")
     if srv_size > SERVER_BUDGET:
         errs.append(f"server data {srv_size} bytes exceeds budget {SERVER_BUDGET}")
+    with_tz = sum(1 for a in airports if a.get('tz'))
+    if airports and with_tz / len(airports) < TZ_COVERAGE_MIN:
+        errs.append(f'only {with_tz}/{len(airports)} airports have a time zone')
     # golden checks
     by_id = {c["id"]: c for c in cities}
     if "jp-tokyo" in by_id and by_id["jp-tokyo"]["tz"] != "Asia/Tokyo":

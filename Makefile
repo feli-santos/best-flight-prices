@@ -1,4 +1,4 @@
-.PHONY: docs-check secret-scan test catalog-build catalog-validate test-tools
+.PHONY: dev lab lab-down lab-deploy docs-check secret-scan test catalog-build catalog-validate test-tools
 docs-check:
 	python3 tools/checks/check_docs.py
 secret-scan:
@@ -14,3 +14,13 @@ catalog-validate:
 test-tools:
 	python3 tools/checks/tests/test_check_docs.py
 	python3 tools/catalog/tests/test_catalog.py
+dev:
+	FARE_PROVIDER=sample ./gradlew :server:run
+lab:
+	@echo "fake provider :8090 + server :8080 (see docs/LOCAL_LAB.md)"
+	@./scripts/lab.sh up
+lab-down:
+	@./scripts/lab.sh down
+lab-deploy:
+	podman machine start 2>/dev/null || true
+	podman compose up --build

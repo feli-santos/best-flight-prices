@@ -19,4 +19,4 @@ Domain, contract, adapter, ViewModels, screens, e2e Android (API 34, 29), e2e iO
 Real hardware performance/thermal, real cellular networks, iOS free signing and 7-day expiry, real swipe-back/keyboard feel, attestation, store review.
 
 ## Gate record
-(empty until first full run)
+- 2026-10-30 Phase 3: server routes (testApplication), provider adapter (MockEngine), fake-provider fault scenarios over real HTTP, podman image (read-only, UID 10001, 512 MB) serving /v1/health and /v1/explore. Note: Podman ignores the Dockerfile HEALTHCHECK (OCI format); use /v1/health directly.

@@ -163,13 +163,14 @@ def load_timezone_places() -> list[tuple[float, float, str]]:
     return places
 
 
-def build_airports(all_airports: dict[str, dict], needed: set[str]) -> list[dict]:
+def build_airports(all_airports: dict[str, dict], needed: set[str], tz_places) -> list[dict]:
     rows = []
     for a in all_airports.values():
         keep = (a["type"] in ("large_airport", "medium_airport") and a["scheduled"]) or a["iata"] in needed
         if keep:
+            tz = nearest_timezone(a["lat"], a["lon"], tz_places) or nearest_timezone(a["lat"], a["lon"], tz_places, max_km=400.0)
             rows.append({"iata": a["iata"], "name": a["name"], "city": a["city"], "country": a["country"],
-                         "lat": a["lat"], "lon": a["lon"], "size": "L" if a["type"] == "large_airport" else "M"})
+                         "lat": a["lat"], "lon": a["lon"], "size": "L" if a["type"] == "large_airport" else "M", "tz": tz})
     rows.sort(key=lambda r: r["iata"])
     return rows
 
@@ -180,7 +181,7 @@ def build_destinations(all_airports, tz_places):
         cc, continent, rank, en, pt, es = r
         countries.append({"code": cc, "continent": continent, "rank": int(rank), "names": {"en": en, "pt": pt, "es": es}})
     cities = []
-    for r in parse_pipe_file(CURATED / "cities.txt"):
+    for order, r in enumerate(parse_pipe_file(CURATED / "cities.txt")):
         cid, cc, gateway, coord, min_nights, en, pt, es = r
         ap = all_airports.get(coord)
         if ap is None:
@@ -190,7 +191,7 @@ def build_destinations(all_airports, tz_places):
             raise SystemExit(f"no time zone for {cid}")
         cities.append({
             "id": cid, "country": cc, "gateway": gateway, "airport": coord, "lat": ap["lat"], "lon": ap["lon"],
-            "tz": tz, "minNights": int(min_nights) if min_nights else None,
+            "tz": tz, "order": order, "minNights": int(min_nights) if min_nights else None,
             "names": {"en": en, "pt": pt, "es": es},
         })
     cities.sort(key=lambda c: c["id"])
@@ -283,7 +284,7 @@ def main() -> None:
     tz_places = load_timezone_places()
     countries, cities = build_destinations(all_airports, tz_places)
     needed = {c["airport"] for c in cities}
-    airports = build_airports(all_airports, needed)
+    airports = build_airports(all_airports, needed, tz_places)
     climate = build_climate(cities)
     cyclones = build_cyclones(cities)
     seismic = build_seismic(cities)

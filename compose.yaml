@@ -1,0 +1,16 @@
+# Local lab: server + Travelpayouts-shaped fake provider. Use with `podman compose` / `docker compose`.
+services:
+  fake-provider:
+    build: { context: ., dockerfile: Dockerfile.fake }
+    ports: ["8090:8090"]
+  server:
+    build: .
+    ports: ["8080:8080"]
+    environment:
+      FARE_PROVIDER: travelpayouts
+      TRAVELPAYOUTS_TOKEN: lab-token
+      TRAVELPAYOUTS_BASE_URL: http://fake-provider:8090
+      RATE_LIMIT_PER_MINUTE: "600"
+    read_only: true
+    mem_limit: 512m
+    depends_on: [fake-provider]

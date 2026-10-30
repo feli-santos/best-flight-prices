@@ -9,4 +9,6 @@ JSON over HTTPS. Errors: `application/problem+json`. Prices: decimal string + cu
 | POST /v1/recommendations | origin + scope + dates + stay -> months (single place) or ranked destinations |
 | POST /v1/options | origin + destination + month + nights -> ranked round trips |
 
-Responses carry `stay{nights,reasonCodes}`, `months[]{yearMonth,band,confidence,fare?,reasonCodes<=2}`, and `fare{amount,currency,foundAt,source,deepLink?}`. Each request has an 8s deadline; unfinished destinations return `fareStatus: "pending"`. Contract changes inside /v1 are additive only. Detailed schemas live in the contracts module and golden JSON tests.
+Responses carry `stay{nights,reasonCodes}`, `months[]{yearMonth,band,confidence,fare?,reasonCodes<=2}`, and `fare{price{amount,currency},retrievedAt,source,deepLink?,transfers?,durationMinutes?,...}`. Each request has an 8s deadline; unfinished destinations return `fareStatus: "pending"`. Contract changes inside /v1 are additive only. Detailed schemas live in the contracts module and golden JSON tests.
+
+`retrievedAt` is when our server fetched the fare; the provider's data is itself cached from traveler searches of the previous ~48h. Errors map to problem types: invalid-request, unknown-origin, unknown-destination, rate-limited (429), provider-unavailable (503), provider-unauthorized (502), budget-exhausted (503), update-required (426), currency-unsupported (400).

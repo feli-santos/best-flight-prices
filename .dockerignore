@@ -1,0 +1,8 @@
+.git
+.gradle
+**/build
+.local
+.env
+.kotlin
+iosApp
+androidApp

@@ -23,7 +23,7 @@ object DatePlanner {
     /** True when the stay is within one night of the requested length (or any stay when nights is null). */
     fun matchesStay(depart: LocalDate, ret: LocalDate, nights: Int?): Boolean {
         if (nights == null) return true
-        val actual = ret.toEpochDays() - depart.toEpochDays()
+        val actual = (ret.toEpochDays() - depart.toEpochDays()).toInt()
         return kotlin.math.abs(actual - nights) <= 1
     }
 }
