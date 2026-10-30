@@ -10,8 +10,8 @@ Golden: CNF->GRU 3; CNF->LIS 7; CNF->Tokyo >=10; CNF->SYD >=12.
 - Climate: 0.5 temp (1.0 at 18-28 C max, 0 at 8/36) + 0.4 rain (1.0 <2 mm/day, 0 at 8) + 0.1 humidity penalty.
 - Experience: peak 1.0, shoulder 0.7, else 0.3; missing if none defined.
 - Cyclone: low 1.0, moderate 0.6, high 0.1.
-Weights: fare .30, climate .30, experience .25, cyclone .15; missing factors renormalized. Bands: >=.75 Great, >=.60 Good, >=.45 Mixed, else Avoid. High cyclone caps at Mixed. Seismic data is not an input (enforced by the scorer signature).
-Confidence: high (all factors, fare <7 days), medium (fare missing), low (climate missing). Reasons: two most influential factors; fareMissing always shown when absent.
+Weights: fare .30, climate .30, experience .25, cyclone .15; missing factors renormalized. Bands: >=.75 Great, >=.60 Good, >=.45 Mixed, else Avoid. High cyclone caps at Mixed; a climate factor below 0.30 also caps at Mixed. Seismic data is not an input (enforced by the scorer signature).
+Confidence: high (all factors, fare <7 days), medium (fare missing), low (climate missing). Reasons: two most influential factors (a peak signature experience is always surfaced first); fareMissing always shown when absent.
 
 ## Itinerary ranking
 Price 55%, total duration 25%, stops 20% (min-max within the set; missing duration = median). Tie-break price then departure date; max 20.
