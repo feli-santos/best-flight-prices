@@ -19,6 +19,7 @@ fun buildProvider(cfg: ServerConfig, catalog: Catalog, nowMs: () -> Long = Syste
         "travelpayouts" -> {
             val token = cfg.token ?: error("FARE_PROVIDER=travelpayouts requires TRAVELPAYOUTS_TOKEN")
             val http = HttpClient(CIO) {
+                followRedirects = false // never forward the access token to another host
                 install(HttpTimeout) { requestTimeoutMillis = 15_000; connectTimeoutMillis = 5_000 }
                 install(ContentEncoding) { gzip() }
             }

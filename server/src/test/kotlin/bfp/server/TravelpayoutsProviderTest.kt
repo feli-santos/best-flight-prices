@@ -114,4 +114,32 @@ class TravelpayoutsProviderTest {
         }
         assertEquals(ProviderException.Kind.CURRENCY_UNSUPPORTED, e.kind)
     }
+
+    @Test fun missingCurrencyEchoWithRowsIsRejected() = runTest {
+        val e = assertFailsWith<ProviderException> {
+            provider(body = grouped.replace(",\"currency\":\"brl\"", "")).monthlyCheapest("BHZ", "LIS", "BRL", 5..14)
+        }
+        assertEquals(ProviderException.Kind.BAD_RESPONSE, e.kind)
+    }
+
+    @Test fun wrongTypedFieldsAreBadResponseNotCrash() = runTest {
+        val body = """{"success":true,"data":{"2027-04-10":{"price":{},"departure_at":"2027-04-10T22:00:00-03:00"}},"currency":"brl"}"""
+        // a row with an unusable price is skipped (no invented fare)
+        assertTrue(provider(body = body).monthlyCheapest("A", "B", "BRL", 3..7).isEmpty())
+        val e = assertFailsWith<ProviderException> { provider(body = """{"success":{"x":1},"data":"nope","currency":"brl"}""").monthlyCheapest("A", "B", "BRL", 3..7) }
+        assertEquals(ProviderException.Kind.BAD_RESPONSE, e.kind)
+    }
+
+    @Test fun zeroOrNegativePriceRowsAreDropped() = runTest {
+        val body = """{"success":true,"data":[{"price":0,"departure_at":"2027-04-10T22:00:00-03:00"},{"price":-5,"departure_at":"2027-04-11T22:00:00-03:00"}],"currency":"brl"}"""
+        assertTrue(provider(body = body).cheapestByDestination("A", null, "BRL").isEmpty())
+    }
+
+    @Test fun linksAreOnlyAviasalesPathsAndMarkerIsEncoded() = runTest {
+        fun body(link: String) = """{"success":true,"data":[{"destination":"LIS","price":100,"departure_at":"2027-04-10T22:00:00-03:00","link":"$link"}],"currency":"brl"}"""
+        assertNull(provider(body = body("@evil.com/x")).cheapestByDestination("A", null, "BRL").single().deepLink)
+        assertNull(provider(body = body("//evil.com/x")).cheapestByDestination("A", null, "BRL").single().deepLink)
+        val withFrag = provider(body = body("/search/x#frag")).cheapestByDestination("A", null, "BRL").single().deepLink
+        assertEquals("https://www.aviasales.com/search/x?marker=BHZ-marker", withFrag)
+    }
 }

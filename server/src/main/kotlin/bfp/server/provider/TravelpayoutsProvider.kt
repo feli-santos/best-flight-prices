@@ -21,7 +21,6 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.intOrNull
 import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 
 /**
  * Travelpayouts / Aviasales Data API adapter (cached fares from traveler searches of the last ~48h).
@@ -61,14 +60,20 @@ class TravelpayoutsProvider(
         val root = try { json.parseToJsonElement(response.bodyAsText()).jsonObject } catch (_: Exception) {
             throw ProviderException(ProviderException.Kind.BAD_RESPONSE, "malformed provider response")
         }
-        if (root["success"]?.jsonPrimitive?.contentOrNull == "false") {
+        val success = root["success"]
+        if (success != null && (success !is JsonPrimitive || success.contentOrNull != "true")) {
             throw ProviderException(ProviderException.Kind.BAD_RESPONSE, "provider reported failure")
         }
         return root
     }
 
+    /** Prices must be labelled with the currency the provider actually used; a missing echo with rows is rejected. */
     private fun checkCurrency(root: JsonObject, requested: String) {
-        val echoed = root["currency"]?.jsonPrimitive?.contentOrNull ?: return
+        val echoed = (root["currency"] as? JsonPrimitive)?.contentOrNull
+        if (echoed == null) {
+            if (rows(root["data"]).isNotEmpty()) throw ProviderException(ProviderException.Kind.BAD_RESPONSE, "provider did not state the currency")
+            return
+        }
         if (!echoed.equals(requested, ignoreCase = true)) {
             throw ProviderException(ProviderException.Kind.CURRENCY_UNSUPPORTED, "provider returned $echoed, requested $requested")
         }
@@ -80,19 +85,23 @@ class TravelpayoutsProvider(
         else -> emptyList()
     }
 
+    /** Only provider-supplied Aviasales paths; anything that could change the host is dropped. */
     private fun link(path: String?): String? {
-        if (path.isNullOrBlank()) return null
-        val base = "https://www.aviasales.com$path"
-        return if (marker.isNullOrBlank()) base else base + (if ('?' in base) "&" else "?") + "marker=$marker"
+        if (path.isNullOrBlank() || !path.startsWith("/") || path.startsWith("//") || '\\' in path || path.any { it.isISOControl() || it == ' ' }) return null
+        val clean = path.substringBefore('#')
+        val base = "https://www.aviasales.com$clean"
+        if (marker.isNullOrBlank()) return base
+        val enc = java.net.URLEncoder.encode(marker, Charsets.UTF_8)
+        return base + (if ('?' in base) "&" else "?") + "marker=$enc"
     }
 
     private fun toQuote(o: JsonObject, currency: String): FareQuote? {
-        val price = o["price"]?.jsonPrimitive?.contentOrNull ?: return null
-        val dep = o["departure_at"]?.jsonPrimitive?.contentOrNull?.take(10)?.let { runCatching { LocalDate.parse(it) }.getOrNull() } ?: return null
-        val ret = o["return_at"]?.jsonPrimitive?.contentOrNull?.take(10)?.let { runCatching { LocalDate.parse(it) }.getOrNull() }
-        val minor = runCatching { Money.toMinor(price) }.getOrNull() ?: return null
-        fun s(k: String) = o[k]?.jsonPrimitive?.contentOrNull
-        fun i(k: String) = o[k]?.jsonPrimitive?.intOrNull
+        fun s(k: String) = (o[k] as? JsonPrimitive)?.contentOrNull
+        fun i(k: String) = (o[k] as? JsonPrimitive)?.intOrNull
+        val price = s("price") ?: return null
+        val dep = s("departure_at")?.take(10)?.let { runCatching { LocalDate.parse(it) }.getOrNull() } ?: return null
+        val ret = s("return_at")?.take(10)?.let { runCatching { LocalDate.parse(it) }.getOrNull() }
+        val minor = runCatching { Money.toMinor(price) }.getOrNull()?.takeIf { it > 0 } ?: return null
         return FareQuote(
             origin = s("origin") ?: "", destination = s("destination") ?: "", destinationAirport = s("destination_airport"),
             departDate = dep, returnDate = ret, priceMinor = minor, currency = currency.uppercase(),

@@ -4,42 +4,50 @@ import bfp.core.FareProvider
 import bfp.core.FareQuote
 import bfp.core.ProviderException
 import bfp.core.YearMonth
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
 import java.util.concurrent.atomic.AtomicLong
 
-/** Async TTL cache with single-flight: concurrent loads for one key share one call. Failures are not cached. */
+/**
+ * Async TTL cache with single-flight: concurrent loads for one key share one call, which runs in a
+ * cache-owned scope so one caller's cancellation never fails other waiters. Failures are not cached.
+ * State is guarded by a plain monitor (tiny critical sections, no suspension) so cleanup cannot be cancelled.
+ */
 class TtlCache<K : Any, V : Any>(private val ttlMs: Long, private val nowMs: () -> Long, private val maxEntries: Int = 5000) {
     private class Entry<V>(val value: V, val at: Long)
     private val done = LinkedHashMap<K, Entry<V>>()
-    private val inflight = HashMap<K, CompletableDeferred<V>>()
-    private val lock = Mutex()
+    private val inflight = HashMap<K, Deferred<V>>()
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
+    fun size(): Int = synchronized(this) { done.size }
 
     suspend fun get(key: K, load: suspend () -> V): V {
-        var mine: CompletableDeferred<V>? = null
-        val waiting: CompletableDeferred<V>? = lock.withLock {
+        val deferred = synchronized(this) {
             val hit = done[key]
             if (hit != null && nowMs() - hit.at < ttlMs) return hit.value
-            val running = inflight[key]
-            if (running != null) running else { mine = CompletableDeferred<V>().also { inflight[key] = it }; null }
-        }
-        if (waiting != null) return waiting.await()
-        val d = mine!!
-        try {
-            val v = load()
-            lock.withLock {
-                done[key] = Entry(v, nowMs())
-                while (done.size > maxEntries) done.remove(done.keys.first())
-                inflight.remove(key)
+            inflight.getOrPut(key) {
+                scope.async {
+                    try {
+                        val v = load()
+                        synchronized(this@TtlCache) { store(key, v) }
+                        v
+                    } finally {
+                        synchronized(this@TtlCache) { inflight.remove(key) }
+                    }
+                }
             }
-            d.complete(v)
-            return v
-        } catch (t: Throwable) {
-            lock.withLock { inflight.remove(key) }
-            d.completeExceptionally(t)
-            throw t
         }
+        return deferred.await()
+    }
+
+    private fun store(key: K, v: V) {
+        val now = nowMs()
+        done.entries.removeAll { now - it.value.at >= ttlMs }
+        done[key] = Entry(v, now)
+        while (done.size > maxEntries) done.remove(done.keys.first())
     }
 }
 
@@ -65,7 +73,7 @@ class GuardedProvider(
 ) : FareProvider by inner {
     private val monthly = TtlCache<String, Map<YearMonth, FareQuote>>(ttlMs, nowMs)
     private val trips = TtlCache<String, List<FareQuote>>(ttlMs, nowMs)
-    private val explore = TtlCache<String, List<FareQuote>>(ttlMs, nowMs)
+    private val explore = TtlCache<String, List<FareQuote>>(ttlMs, nowMs, maxEntries = 200)
 
     private fun charge() { if (!budget.tryAcquire()) throw ProviderException(ProviderException.Kind.BUDGET_EXHAUSTED, "daily provider budget exhausted") }
 

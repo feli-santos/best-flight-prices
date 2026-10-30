@@ -11,6 +11,9 @@ data class ServerConfig(
     val ratePerMinute: Int,
     val minAppVersion: String,
     val port: Int = 8080,
+    val requestDeadlineMs: Long = 8_000,
+    /** Trust X-Forwarded-For (only enable behind a proxy that sets it, e.g. Cloud Run / Fly). */
+    val trustProxy: Boolean = false,
 ) {
     companion object {
         fun fromEnv(env: Map<String, String> = System.getenv()): ServerConfig {
@@ -25,10 +28,12 @@ data class ServerConfig(
                 ratePerMinute = int("RATE_LIMIT_PER_MINUTE", 30),
                 minAppVersion = env["MIN_APP_VERSION"] ?: "0.0.0",
                 port = int("PORT", 8080),
+                requestDeadlineMs = (env["REQUEST_DEADLINE_MS"]?.toLongOrNull() ?: 8_000L),
+                trustProxy = env["TRUST_PROXY"]?.lowercase() == "true",
             )
         }
     }
 
     // Never print the token.
-    override fun toString() = "ServerConfig(provider=$provider, baseUrl=$baseUrl, ttl=$ttlSeconds, budget=$dailyBudget, rate=$ratePerMinute, port=$port)"
+    override fun toString() = "ServerConfig(provider=$provider, baseUrl=$baseUrl, ttl=$ttlSeconds, budget=$dailyBudget, rate=$ratePerMinute, port=$port, deadlineMs=$requestDeadlineMs, trustProxy=$trustProxy)"
 }

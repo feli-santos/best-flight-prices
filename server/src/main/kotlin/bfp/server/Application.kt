@@ -47,6 +47,23 @@ internal fun versionLessThan(a: String, b: String): Boolean {
     return false
 }
 
+/** Rate-limit identity. Forwarded headers are honoured only behind a trusted proxy (last hop wins, never the client-supplied first). */
+internal fun clientKey(call: ApplicationCall, trustProxy: Boolean): String {
+    if (trustProxy) {
+        call.request.header("X-Forwarded-For")?.split(',')?.map { it.trim() }?.lastOrNull { it.isNotEmpty() }?.let { return it }
+    }
+    return call.request.origin.remoteAddress
+}
+
+private const val MAX_BODY_BYTES = 16 * 1024L
+
+private val bodyLimit = createApplicationPlugin("BodyLimit") {
+    onCall { call ->
+        val len = call.request.header("Content-Length")?.toLongOrNull()
+        if (len != null && len > MAX_BODY_BYTES) call.problem(HttpStatusCode.PayloadTooLarge, ProblemTypes.INVALID_REQUEST, "Request body too large")
+    }
+}
+
 private fun versionGate(min: String) = createApplicationPlugin("VersionGate") {
     onCall { call ->
         val path = call.request.path()
@@ -59,14 +76,14 @@ private fun versionGate(min: String) = createApplicationPlugin("VersionGate") {
 }
 
 fun Application.module(cfg: ServerConfig, catalog: Catalog, provider: FareProvider, nowMs: () -> Long = System::currentTimeMillis) {
-    val service = RecommendationService(catalog, provider, nowMs)
+    val service = RecommendationService(catalog, provider, nowMs, cfg.requestDeadlineMs)
 
     install(ContentNegotiation) { json(ApiJson) }
     install(CallLogging) { filter { it.request.path() != ApiPaths.HEALTH } }
     install(RateLimit) {
         register(API_LIMIT) {
             rateLimiter(limit = cfg.ratePerMinute, refillPeriod = 60.seconds)
-            requestKey { it.request.origin.remoteHost }
+            requestKey { call -> clientKey(call, cfg.trustProxy) }
         }
     }
     install(StatusPages) {
@@ -90,6 +107,7 @@ fun Application.module(cfg: ServerConfig, catalog: Catalog, provider: FareProvid
         }
     }
     install(versionGate(cfg.minAppVersion))
+    install(bodyLimit)
 
     routing {
         get(ApiPaths.HEALTH) {

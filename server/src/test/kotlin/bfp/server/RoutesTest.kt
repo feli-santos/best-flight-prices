@@ -23,8 +23,8 @@ class RoutesTest {
     private val catalog = Catalog.load()
     // 2026-10-30 12:00 UTC
     private val now = 1_793_361_600_000L
-    private fun config(minApp: String = "0.0.0", rate: Int = 1000) =
-        ServerConfig(provider = "sample", token = null, marker = null, baseUrl = "x", ttlSeconds = 60, dailyBudget = 1000, ratePerMinute = rate, minAppVersion = minApp)
+    private fun config(minApp: String = "0.0.0", rate: Int = 1000, deadlineMs: Long = 8000, trustProxy: Boolean = false) =
+        ServerConfig(provider = "sample", token = null, marker = null, baseUrl = "x", ttlSeconds = 60, dailyBudget = 1000, ratePerMinute = rate, minAppVersion = minApp, requestDeadlineMs = deadlineMs, trustProxy = trustProxy)
 
     private fun app(provider: bfp.core.FareProvider = SampleFareProvider(catalog) { now }, cfg: ServerConfig = config(), block: suspend io.ktor.server.testing.ApplicationTestBuilder.() -> Unit) =
         testApplication { application { module(cfg, catalog, provider) { now } }; block() }
@@ -169,5 +169,96 @@ class RoutesTest {
         val missing = p.months.filter { it.fareStatus == FareStatus.MISSING }
         assertEquals(7, missing.size)
         assertTrue(missing.all { it.fare == null && it.reasons.any { r -> r.code == ReasonCodeDto.FARE_MISSING } && it.confidence != ConfidenceDto.HIGH })
+    }
+
+    // ---- review hardening ----
+    @Test fun unsupportedCurrencyIsRejectedBeforeTheProvider() = app {
+        val r = client.postJson(ApiPaths.EXPLORE, ApiJson.encodeToString(ExploreRequest("CNF", currency = "ZZZ")))
+        assertEquals(HttpStatusCode.BadRequest, r.status)
+        assertEquals(ProblemTypes.CURRENCY_UNSUPPORTED, ApiJson.decodeFromString<Problem>(r.bodyAsText()).type)
+    }
+
+    @Test fun datesOutsideTheHorizonOrInvertedAreRejected() = app {
+        fun rec(d: DatesDto) = ApiJson.encodeToString(RecommendationRequest("CNF", ScopeDto(ScopeKind.PLACE, "pt-lisbon"), d))
+        for (d in listOf(DatesDto.Exact("1900-01-01", "1900-01-10"), DatesDto.Exact("9999-01-01", "9999-01-09"), DatesDto.Exact("2027-04-10", "2027-04-05"),
+            DatesDto.Range("2030-01-01", "2030-02-01"), DatesDto.Exact("2027-04-10", "2027-07-20"))) {
+            assertEquals(HttpStatusCode.BadRequest, client.postJson(ApiPaths.RECOMMENDATIONS, rec(d)).status, d.toString())
+        }
+        assertEquals(HttpStatusCode.BadRequest, client.postJson(ApiPaths.OPTIONS, ApiJson.encodeToString(OptionsRequest("CNF", "pt-lisbon", "1900-01"))).status)
+        assertEquals(HttpStatusCode.BadRequest, client.postJson(ApiPaths.EXPLORE, ApiJson.encodeToString(ExploreRequest("CNF", DatesDto.Exact("9999-01-01")))).status)
+    }
+
+    @Test fun exactReturnDateDefinesTheStayAndOverridesAuto() = app {
+        val req = RecommendationRequest("CNF", ScopeDto(ScopeKind.PLACE, "jp-tokyo"), DatesDto.Exact("2027-04-10", "2027-04-17"), StayDto.Auto)
+        val p = ApiJson.decodeFromString<RecommendationResponse>(client.postJson(ApiPaths.RECOMMENDATIONS, ApiJson.encodeToString(req)).bodyAsText()).places.single()
+        assertEquals(7, p.stay.nights)
+    }
+
+    @Test fun rangeRecommendationsOnlyShowFaresInsideTheRange() = app {
+        val req = RecommendationRequest("CNF", ScopeDto(ScopeKind.PLACE, "pt-lisbon"), DatesDto.Range("2027-01-20", "2027-03-02"))
+        val p = ApiJson.decodeFromString<RecommendationResponse>(client.postJson(ApiPaths.RECOMMENDATIONS, ApiJson.encodeToString(req)).bodyAsText()).places.single()
+        assertEquals(listOf("2027-01", "2027-02", "2027-03"), p.months.map { it.yearMonth })
+        for (m in p.months) m.fare?.departDate?.let { d -> assertTrue(d >= "2027-01-20" && d <= "2027-03-02", "fare outside range: $d") }
+    }
+
+    private class CountingExplore(val inner: bfp.core.FareProvider) : bfp.core.FareProvider by inner {
+        val months = java.util.Collections.synchronizedList(mutableListOf<bfp.core.YearMonth?>())
+        override suspend fun cheapestByDestination(origin: String, depart: bfp.core.YearMonth?, currency: String): List<bfp.core.FareQuote> {
+            months += depart; return inner.cheapestByDestination(origin, depart, currency)
+        }
+    }
+
+    @Test fun rangeExploreQueriesEachMonthSoDestinationsAreNotDropped() {
+        val counting = CountingExplore(SampleFareProvider(catalog) { now })
+        app(provider = counting) {
+            val r = client.postJson(ApiPaths.EXPLORE, ApiJson.encodeToString(ExploreRequest("CNF", DatesDto.Range("2027-01-10", "2027-03-20"), "BRL")))
+            val e = ApiJson.decodeFromString<ExploreResponse>(r.bodyAsText())
+            assertEquals(setOf(bfp.core.YearMonth(2027, 1), bfp.core.YearMonth(2027, 2), bfp.core.YearMonth(2027, 3)), counting.months.toSet())
+            val withFare = e.countries.count { it.cities.first().fareStatus == FareStatus.OK }
+            assertTrue(withFare >= 40, "withFare=$withFare")
+            for (c in e.countries) c.cities.mapNotNull { it.fare?.departDate }.forEach { assertTrue(it >= "2027-01-10" && it <= "2027-03-20") }
+        }
+    }
+
+    @Test fun originsOwnCityAndNearbyAirportsAreExcludedFromExplore() = app {
+        val e = ApiJson.decodeFromString<ExploreResponse>(client.postJson(ApiPaths.EXPLORE, ApiJson.encodeToString(ExploreRequest("CGH"))).bodyAsText())
+        assertTrue(e.countries.flatMap { it.cities }.none { it.cityId == "br-sao-paulo" })
+    }
+
+    @Test fun slowProviderYieldsPendingMonthsNotAnError() = app(
+        provider = object : bfp.core.FareProvider by SampleFareProvider(catalog, { now }) {
+            override suspend fun monthlyCheapest(origin: String, destination: String, currency: String, tripDays: IntRange): Map<bfp.core.YearMonth, bfp.core.FareQuote> {
+                kotlinx.coroutines.delay(5_000); return emptyMap()
+            }
+        },
+        cfg = config(deadlineMs = 200),
+    ) {
+        val req = RecommendationRequest("CNF", ScopeDto(ScopeKind.PLACE, "pt-lisbon"))
+        val r = client.postJson(ApiPaths.RECOMMENDATIONS, ApiJson.encodeToString(req))
+        assertEquals(HttpStatusCode.OK, r.status)
+        val p = ApiJson.decodeFromString<RecommendationResponse>(r.bodyAsText()).places.single()
+        assertTrue(p.months.all { it.fareStatus == FareStatus.PENDING && it.fare == null })
+    }
+
+    @Test fun oversizedBodyIs413() = app {
+        val r = client.postJson(ApiPaths.EXPLORE, """{"origin":"CNF","pad":"${"x".repeat(20_000)}"}""")
+        assertEquals(HttpStatusCode.PayloadTooLarge, r.status)
+    }
+
+    @Test fun trustedProxyKeysRateLimitOnForwardedClient() = app(cfg = config(rate = 1, trustProxy = true)) {
+        suspend fun hit(ip: String) = client.post(ApiPaths.EXPLORE) {
+            contentType(ContentType.Application.Json); setBody(ApiJson.encodeToString(ExploreRequest("CNF"))); header("X-Forwarded-For", ip)
+        }.status
+        assertEquals(HttpStatusCode.OK, hit("1.1.1.1"))
+        assertEquals(HttpStatusCode.OK, hit("2.2.2.2"))          // different client, own bucket
+        assertEquals(HttpStatusCode.TooManyRequests, hit("1.1.1.1"))
+    }
+
+    @Test fun forwardedHeadersAreIgnoredUnlessProxyIsTrusted() = app(cfg = config(rate = 1)) {
+        suspend fun hit(ip: String) = client.post(ApiPaths.EXPLORE) {
+            contentType(ContentType.Application.Json); setBody(ApiJson.encodeToString(ExploreRequest("CNF"))); header("X-Forwarded-For", ip)
+        }.status
+        assertEquals(HttpStatusCode.OK, hit("1.1.1.1"))
+        assertEquals(HttpStatusCode.TooManyRequests, hit("2.2.2.2")) // spoofing does not escape the limit
     }
 }
