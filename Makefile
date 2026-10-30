@@ -5,4 +5,5 @@ secret-scan:
 	@command -v gitleaks >/dev/null || { echo "install gitleaks: brew install gitleaks"; exit 1; }
 	gitleaks git --redact -v
 test:
-	./gradlew allTests
+	./gradlew jvmTest
+export JAVA_HOME ?= /opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home
