@@ -20,3 +20,10 @@ Real hardware performance/thermal, real cellular networks, iOS free signing and 
 
 ## Gate record
 - 2026-10-30 Phase 3: server routes (testApplication), provider adapter (MockEngine), fake-provider fault scenarios over real HTTP, podman image (read-only, UID 10001, 512 MB) serving /v1/health and /v1/explore. Note: Podman ignores the Dockerfile HEALTHCHECK (OCI format); use /v1/health directly.
+
+## Gate record: Phase 4a (client, shared UI, desktop harness)
+- `:client` (ApiClient, SearchViewModel, offline cache): 19 tests. `:server` includes `ClientContractTest` (real client vs real routes).
+- `:ui` (Compose Multiplatform, desktop target): 30 tests, including every screen state in en/pt/es, 1x and 2x text, light and dark; strings parity for all reason codes and all 30 experiences.
+- Run the harness: `make dev` (server, sample mode) then `./gradlew :desktopApp:run`.
+- Screenshots: `./gradlew :ui:desktopTest --tests bfp.ui.GalleryTest -Dbfp.gallery=$PWD/.local/artifacts/gallery`.
+- Not yet done: Android and iOS app shells (need Android SDK and Xcode), Maestro flows.

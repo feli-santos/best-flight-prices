@@ -26,5 +26,6 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.ktor.client.mock)
+    testImplementation(project(":client"))
 }
 tasks.test { useJUnitPlatform() }
