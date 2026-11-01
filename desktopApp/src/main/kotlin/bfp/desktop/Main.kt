@@ -50,10 +50,10 @@ fun main() = application {
         SearchViewModel(ApiClient(HttpClient(OkHttp), baseUrl, "0.1.0"), FileStore(File(System.getProperty("bfp.local", ".local"), "desktop-last-result.json")), nowMs = platform::nowMs)
     }
 
-    Window(onCloseRequest = ::exitApplication, title = "BestFlightPrice (phone)", state = rememberWindowState(size = DpSize(390.dp, 800.dp))) {
+    Window(onCloseRequest = ::exitApplication, title = "BestFlightPrice", state = rememberWindowState(size = DpSize(390.dp, 800.dp))) {
         CompositionLocalProvider(LocalDensity provides Density(LocalDensity.current.density, scale)) { App(vm, catalog, platform, lang, dark) }
     }
-    Window(onCloseRequest = ::exitApplication, title = "Dev panel", state = rememberWindowState(size = DpSize(360.dp, 420.dp))) {
+    if (System.getenv("BFP_DEVPANEL") == "1") Window(onCloseRequest = ::exitApplication, title = "Dev panel", state = rememberWindowState(size = DpSize(360.dp, 420.dp))) {
         MaterialTheme {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(baseUrl, { baseUrl = it }, label = { Text("Backend URL") }, singleLine = true)

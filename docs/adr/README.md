@@ -16,3 +16,4 @@ Superseded, never rewritten. Status: Accepted unless noted.
 - [0012 Top-50 world explore](0012-top50-world-explore.md)
 - [0013 Local-first emulation lab](0013-local-first-lab.md)
 - [0014 Python standard-library ETL for the catalog](0014-python-etl-for-catalog.md)
+- [0015 Desktop-first release](0015-desktop-first-scope.md)

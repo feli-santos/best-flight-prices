@@ -1,4 +1,4 @@
-.PHONY: dev lab lab-down lab-deploy docs-check secret-scan test catalog-build catalog-validate test-tools
+.PHONY: app app-dev dev lab lab-down lab-deploy docs-check secret-scan test catalog-build catalog-validate test-tools
 docs-check:
 	python3 tools/checks/check_docs.py
 secret-scan:
@@ -14,6 +14,10 @@ catalog-validate:
 test-tools:
 	python3 tools/checks/tests/test_check_docs.py
 	python3 tools/catalog/tests/test_catalog.py
+app:
+	./scripts/app.sh
+app-dev:
+	./scripts/app.sh dev
 dev:
 	FARE_PROVIDER=sample ./gradlew :server:run
 lab:
