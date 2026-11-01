@@ -27,3 +27,9 @@ Real hardware performance/thermal, real cellular networks, iOS free signing and 
 - Run the harness: `make dev` (server, sample mode) then `./gradlew :desktopApp:run`.
 - Screenshots: `./gradlew :ui:desktopTest --tests bfp.ui.GalleryTest -Dbfp.gallery=$PWD/.local/artifacts/gallery`.
 - Not yet done: Android and iOS app shells (need Android SDK and Xcode), Maestro flows.
+
+## Gate record: 2026-11-01 desktop harness end-to-end
+- `make app` -> search `CNF` -> explore renders sample fares; server logs `200 OK: POST - /v1/explore`. `/v1/recommendations` and `/v1/options` checked by hand; invalid dates rejected with 400.
+- Regression found: ViewModel scopes dispatch on `Dispatchers.Main`, which no desktop module provided, so the first search click crashed the window. `:desktopApp` now depends on `kotlinx-coroutines-swing` and `MainDispatcherTest` fails with the original message if it goes missing.
+- `make test` now runs `./gradlew check`: 169 tests (`:core` 44, `:contracts` 8, `:client` 19, `:server` 60, `:ui` 30, `:desktopApp` 1).
+- `make lab-real` runs the server against the real provider; it has not been run yet (no token).
