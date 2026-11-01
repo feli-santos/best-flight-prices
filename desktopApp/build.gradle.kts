@@ -10,7 +10,11 @@ dependencies {
     implementation(compose.desktop.currentOs)
     implementation(libs.compose.material3)
     implementation(libs.ktor.client.okhttp)
+    // ViewModel scopes dispatch on Dispatchers.Main; on the JVM that provider lives here.
+    implementation(libs.kotlinx.coroutines.swing)
+    testImplementation(kotlin("test"))
 }
+tasks.test { useJUnitPlatform() }
 compose.desktop {
     application {
         mainClass = "bfp.desktop.MainKt"
