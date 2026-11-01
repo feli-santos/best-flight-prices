@@ -1,11 +1,11 @@
-.PHONY: app app-dev dev lab lab-down lab-deploy docs-check secret-scan test catalog-build catalog-validate test-tools
+.PHONY: app app-dev dev lab lab-real lab-down lab-deploy docs-check secret-scan test catalog-build catalog-validate test-tools
 docs-check:
 	python3 tools/checks/check_docs.py
 secret-scan:
 	@command -v gitleaks >/dev/null || { echo "install gitleaks: brew install gitleaks"; exit 1; }
 	gitleaks git --redact -v
 test:
-	./gradlew jvmTest
+	./gradlew check
 export JAVA_HOME ?= /opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home
 catalog-build:
 	python3 tools/catalog/build_catalog.py
@@ -23,6 +23,9 @@ dev:
 lab:
 	@echo "fake provider :8090 + server :8080 (see docs/LOCAL_LAB.md)"
 	@./scripts/lab.sh up
+lab-real:
+	@echo "real Travelpayouts fares on :8080 (needs TRAVELPAYOUTS_TOKEN in .env)"
+	@./scripts/lab-real.sh
 lab-down:
 	@./scripts/lab.sh down
 lab-deploy:
